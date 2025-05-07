@@ -11,8 +11,22 @@ from database import get_db, get_tables, get_table_data, execute_query, get_tabl
 
 # Importar los módulos nuevos
 from formato import tabla_formato
-from pandas_consultas import get_top_generos_juegos, get_top_juegos_menos_ventas, get_top_publishers_juegos
-from seaborn_graficas import get_top_juegos_ventas, get_top_generos_ventas, get_ventas_plataforma_region
+from pandas_consultas import (
+    get_top_plataformas_mas_juegos, 
+    get_juegos_mas_vendidos_por_region, 
+    get_lanzamientos_por_anio,
+    get_top_generos_juegos,
+    get_top_juegos_menos_ventas,
+    get_top_publishers_juegos
+)
+from seaborn_graficas import (
+    get_top_editoras_por_cantidad_de_juegos,
+    get_distribucion_ventas_por_region,
+    get_juegos_mas_lanzados_por_anio,
+    get_top_juegos_ventas,
+    get_top_generos_ventas,
+    get_ventas_plataforma_region
+)
 
 # Crear la app FastAPI
 app = FastAPI(title="Game Database API")
@@ -512,7 +526,34 @@ def get_games_by_year(year: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al obtener juegos por año: {str(e)}")
 
-# NUEVOS ENDPOINTS PARA CONSULTAS PANDAS
+# ENDPOINTS PARA CONSULTAS PANDAS
+
+@app.get("/pandas/top-plataformas/{top}", response_class=HTMLResponse)
+def get_top_plataformas(top: int = 10):
+    """Endpoint para obtener las plataformas con más juegos usando pandas"""
+    try:
+        df = get_top_plataformas_mas_juegos(top)
+        return tabla_formato(df, f"Top {top} Plataformas con Más Juegos")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener top plataformas: {str(e)}")
+
+@app.get("/pandas/juegos-region/{region}/{top}", response_class=HTMLResponse)
+def get_juegos_por_region(region: str, top: int = 10):
+    """Endpoint para obtener los juegos más vendidos por región usando pandas"""
+    try:
+        df = get_juegos_mas_vendidos_por_region(region, top)
+        return tabla_formato(df, f"Top {top} Juegos Más Vendidos en {region}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener juegos por región: {str(e)}")
+
+@app.get("/pandas/lanzamientos-anio", response_class=HTMLResponse)
+def get_lanzamientos_anio():
+    """Endpoint para obtener lanzamientos por año usando pandas"""
+    try:
+        df = get_lanzamientos_por_anio()
+        return tabla_formato(df, "Lanzamientos de Juegos por Año")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener lanzamientos por año: {str(e)}")
 
 @app.get("/pandas/top-generos/{top}", response_class=HTMLResponse)
 def get_top_generos(top: int = 10):
@@ -541,7 +582,31 @@ def get_publishers_mas_juegos(top: int = 10):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al obtener top publishers: {str(e)}")
 
-# NUEVOS ENDPOINTS PARA GRÁFICAS SEABORN
+# ENDPOINTS PARA GRÁFICAS SEABORN
+
+@app.get("/seaborn/top-editoras/{top}")
+def generate_top_editoras(top: int = 10):
+    """Endpoint para generar gráfico de las editoras con más juegos"""
+    try:
+        return get_top_editoras_por_cantidad_de_juegos(top)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al generar gráfico de editoras: {str(e)}")
+
+@app.get("/seaborn/distribucion-ventas")
+def generate_distribucion_ventas():
+    """Endpoint para generar gráfico de distribución de ventas por región"""
+    try:
+        return get_distribucion_ventas_por_region()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al generar gráfico de distribución de ventas: {str(e)}")
+
+@app.get("/seaborn/lanzamientos-anio/{top}")
+def generate_lanzamientos_anio(top: int = 10):
+    """Endpoint para generar gráfico de años con más lanzamientos"""
+    try:
+        return get_juegos_mas_lanzados_por_anio(top)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al generar gráfico de lanzamientos por año: {str(e)}")
 
 @app.get("/seaborn/top-juegos-ventas/{top}")
 def generate_top_juegos_ventas(top: int = 10):

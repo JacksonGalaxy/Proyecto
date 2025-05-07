@@ -1,161 +1,213 @@
 # Video Games Database API
 
-Este proyecto implementa una API REST en FastAPI para el análisis y consulta de una base de datos de videojuegos. El sistema está containerizado con Docker y utiliza MySQL como base de datos, proporcionando endpoints para consultas básicas y análisis con visualizaciones.
+Este proyecto implementa una API REST completa para gestionar y analizar una base de datos de videojuegos, utilizando FastAPI, SQLAlchemy, MySQL y herramientas de visualización de datos como Pandas, Matplotlib y Seaborn.
 
-## Estructura del Proyecto
+## 📋 Descripción
 
-El proyecto sigue una arquitectura modular orientada a servicios con los siguientes componentes:
+Esta aplicación proporciona una interfaz completa para acceder a datos de videojuegos, incluyendo información sobre:
 
-- **API RESTful con FastAPI**: Implementa endpoints para consultar datos de videojuegos, plataformas, editores y ventas.
-- **Base de Datos MySQL**: Almacena información sobre juegos, plataformas, editores, géneros y ventas por región.
-- **Visualización de Datos**: Genera gráficos con Matplotlib y Seaborn para análisis visual.
-- **Docker**: Conteneriza la aplicación para facilitar el despliegue.
+- Juegos
+- Plataformas
+- Géneros
+- Editoras (Publishers)
+- Regiones
+- Ventas por región
 
-## Tecnologías Utilizadas
+La API está diseñada para facilitar tanto consultas básicas como análisis avanzados y visualizaciones de datos.
 
-- **Backend**: FastAPI, Python 3.11
-- **Base de Datos**: MySQL 8.0
+## 🛠️ Tecnologías Utilizadas
+
+- **Backend**: [FastAPI](https://fastapi.tiangolo.com/)
+- **Base de Datos**: MySQL
 - **ORM**: SQLAlchemy
-- **Análisis de Datos**: Pandas, Matplotlib, Seaborn
-- **Contenedores**: Docker, Docker Compose
-- **Administración de BD**: PHPMyAdmin
+- **Análisis de Datos**: Pandas
+- **Visualización**: Matplotlib, Seaborn
+- **Contenedorización**: Docker, Docker Compose
+- **Administración de BD**: phpMyAdmin
 
-## Instalación y Configuración
+## 🚀 Instalación y Despliegue
 
-### Prerrequisitos
+### Requisitos Previos
 
-- Docker y Docker Compose
-- Git
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/)
 
-### Pasos para la Instalación
+### Pasos para el Despliegue
 
-1. Clonar el repositorio:
+1. **Clonar el repositorio**:
    ```bash
-   git clone https://github.com/tu-usuario/video-games-api.git
-   cd video-games-api
+   git clone <url-del-repositorio>
+   cd video-games-database
    ```
 
-2. Iniciar los contenedores con Docker Compose:
+2. **Iniciar los servicios con Docker Compose**:
    ```bash
    docker-compose up -d
    ```
 
-3. La API estará disponible en:
-   ```
-   http://localhost:8085
-   ```
+3. **Acceder a la API**:
+   - La API estará disponible en: `http://localhost:8085`
+   - La documentación de la API (Swagger UI): `http://localhost:8085/docs`
+   - phpMyAdmin para administrar la base de datos: `http://localhost:8086`
+     - Usuario: `root`
+     - Contraseña: `rootpassword`
 
-4. PHPMyAdmin para administrar la base de datos:
-   ```
-   http://localhost:8086
-   ```
-   Usuario: root
-   Contraseña: rootpassword
+## 📊 Estructura de la Base de Datos
 
-## Estructura de la Base de Datos
+La base de datos `video_games` está formada por las siguientes tablas principales:
 
-El sistema utiliza una base de datos relacional con las siguientes tablas principales:
+- **game**: Información básica de los juegos.
+- **platform**: Plataformas de videojuegos.
+- **publisher**: Compañías editoras.
+- **genre**: Géneros de videojuegos.
+- **region**: Regiones geográficas.
+- **game_publisher**: Relación entre juegos y editoras.
+- **game_platform**: Relación entre juegos publicados y plataformas, incluye año de lanzamiento.
+- **region_sales**: Ventas de juegos por región.
 
-- **game**: Información básica de cada videojuego
-- **platform**: Plataformas de juegos (PS4, Xbox, etc.)
-- **publisher**: Compañías editoras de los juegos
-- **genre**: Géneros de videojuegos
-- **region**: Regiones geográficas para ventas
-- **game_publisher**: Relación entre juegos y editores
-- **game_platform**: Relación entre juegos y plataformas
-- **region_sales**: Ventas de juegos por plataforma y región
-
-## API Endpoints
+## 📌 Endpoints de la API
 
 ### Endpoints Básicos
 
-- `GET /`: Verificación de estado de la API
+- `GET /`: Punto de entrada principal
 - `GET /tables`: Lista todas las tablas de la base de datos
 - `GET /tables/{table_name}`: Obtiene datos de una tabla específica
 
-### Endpoints de Juegos
+### Consultas Específicas
 
+#### Datos Generales
 - `GET /games`: Lista todos los juegos
-- `GET /games/{game_id}`: Obtiene un juego por ID
-- `GET /games/{game_id}/complete`: Obtiene información completa de un juego con sus relaciones
-- `GET /games/by-year/{year}`: Filtra juegos por año de lanzamiento
+- `GET /games/{game_id}`: Obtiene información de un juego específico por ID
+- `GET /games/{game_id}/complete`: Obtiene información completa de un juego (con relaciones)
+- `GET /platforms`: Lista todas las plataformas
+- `GET /publishers`: Lista todas las editoras
+- `GET /genres`: Lista todos los géneros
+- `GET /regions`: Lista todas las regiones
+- `GET /sales`: Lista datos de ventas
+- `GET /game-platforms`: Lista relaciones juego-plataforma
+- `GET /game-publishers`: Lista relaciones juego-editora
 
-### Endpoints de Estadísticas
-
-- `GET /stats/best-sellings-games/{numero}`: Top N juegos más vendidos
-- `GET /stats/sales-by-genre`: Ventas agrupadas por género
-- `GET /stats/sales-by-platform`: Ventas agrupadas por plataforma
-- `GET /stats/sales-by-publisher`: Ventas agrupadas por editor
+#### Estadísticas y Análisis
+- `GET /stats/best-sellings-games/{numero}`: Top juegos más vendidos
+- `GET /stats/sales-by-genre`: Ventas por género
+- `GET /stats/sales-by-platform`: Ventas por plataforma
+- `GET /stats/sales-by-publisher`: Ventas por editora
 - `GET /stats/sales-by-year-platform`: Ventas por año y plataforma
+- `GET /games/by-year/{year}`: Juegos filtrados por año de lanzamiento
 
-### Endpoints con Pandas (HTML)
+### Visualizaciones con Pandas (HTML)
 
+Los siguientes endpoints devuelven tablas HTML formateadas:
+
+- `GET /pandas/top-plataformas/{top}`: Top plataformas con más juegos
+- `GET /pandas/juegos-region/{region}/{top}`: Top juegos más vendidos por región
+- `GET /pandas/lanzamientos-anio`: Lanzamientos por año
 - `GET /pandas/top-generos/{top}`: Top géneros con más juegos
-- `GET /pandas/juegos-menos-ventas/{top}`: Juegos con menos ventas
-- `GET /pandas/top-publishers/{top}`: Publishers con más juegos
+- `GET /pandas/juegos-menos-ventas/{top}`: Top juegos con menos ventas
+- `GET /pandas/top-publishers/{top}`: Top publishers con más juegos
 
-### Endpoints con Seaborn (Gráficos)
+### Visualizaciones con Seaborn (Imágenes)
 
-- `GET /seaborn/top-juegos-ventas/{top}`: Gráfico de juegos con más ventas
-- `GET /seaborn/top-generos-ventas/{top}`: Gráfico de géneros con más ventas
-- `GET /seaborn/ventas-plataforma-region/{top}`: Gráfico de ventas por plataforma y región
+Los siguientes endpoints devuelven imágenes de gráficos:
 
-## Ejemplos de Uso
+- `GET /seaborn/top-editoras/{top}`: Gráfico de editoras con más juegos
+- `GET /seaborn/distribucion-ventas`: Distribución de ventas por región
+- `GET /seaborn/lanzamientos-anio/{top}`: Años con más lanzamientos
+- `GET /seaborn/top-juegos-ventas/{top}`: Juegos con más ventas totales
+- `GET /seaborn/top-generos-ventas/{top}`: Géneros con más ventas totales
+- `GET /seaborn/ventas-plataforma-region/{top}`: Ventas por plataforma y región
 
-### Obtener los 10 juegos más vendidos
+## 📊 Ejemplos de Uso
+
+### Consultar los 5 juegos más vendidos
 
 ```bash
-curl -X GET "http://localhost:8085/stats/best-sellings-games/10"
+curl -X GET "http://localhost:8085/stats/best-sellings-games/5"
 ```
 
-### Visualizar géneros con más juegos
-
-Navegar a:
+Respuesta:
+```json
+{
+  "message": "Top 5 juegos más vendidos",
+  "count": 5,
+  "data": [
+    {
+      "id": 1,
+      "game_name": "Wii Sports",
+      "genre": "Sports",
+      "total_sales": 82.74
+    },
+    ...
+  ]
+}
 ```
-http://localhost:8085/pandas/top-generos/5
+
+### Obtener un gráfico de los top 10 géneros con más ventas
+
+Acceder a:
 ```
-
-### Obtener gráfico de ventas por plataforma y región
-
-Navegar a:
+http://localhost:8085/seaborn/top-generos-ventas/10
 ```
-http://localhost:8085/seaborn/ventas-plataforma-region/10
+(Devuelve una imagen PNG del gráfico)
+
+### Obtener tabla HTML de lanzamientos por año
+
+Acceder a:
 ```
+http://localhost:8085/pandas/lanzamientos-anio
+```
+(Devuelve una tabla HTML formateada)
 
-## Módulos Principales
+## 🔍 Análisis Avanzados
 
-- **main.py**: Punto de entrada de la aplicación FastAPI y definición de endpoints
-- **database.py**: Funciones para la conexión y consulta a la base de datos
-- **formato.py**: Formateo de respuestas HTML para visualización en navegador
-- **pandas_consultas.py**: Consultas y análisis utilizando Pandas
-- **seaborn_graficas.py**: Generación de gráficos con Seaborn
+El sistema permite realizar análisis avanzados mediante la combinación de datos de múltiples tablas:
 
-## Configuración del Entorno
+- Tendencias de ventas a lo largo del tiempo
+- Comparación de rendimiento entre plataformas
+- Análisis de géneros más populares por región
+- Evolución de las ventas por editora
 
-La configuración del entorno se realiza mediante variables de entorno en el archivo docker-compose.yml:
+## 🗂️ Estructura de Archivos
 
-- **DATABASE_URL**: URL de conexión a la base de datos
-- **MYSQL_ROOT_PASSWORD**: Contraseña de root para MySQL
-- **MYSQL_DATABASE**: Nombre de la base de datos
-- **MYSQL_USER**: Usuario para la base de datos
-- **MYSQL_PASSWORD**: Contraseña para el usuario
+- `database.py`: Configuración y funciones para interactuar con la base de datos
+- `main.py`: Aplicación principal FastAPI con todos los endpoints
+- `pandas_consultas.py`: Consultas específicas utilizando Pandas
+- `seaborn_graficas.py`: Generación de gráficos utilizando Seaborn
+- `formato.py`: Utilidades para formatear tablas HTML
+- `docker-compose.yml`: Configuración de los servicios Docker
+- `requirements.txt`: Dependencias del proyecto
 
-## Contribuciones
+## 🔧 Personalización
 
-Las contribuciones son bienvenidas. Por favor, sigue estos pasos:
+### Modificar la Conexión a la Base de Datos
 
-1. Haz fork del repositorio
-2. Crea una rama para tu feature (`git checkout -b feature/amazing-feature`)
+La conexión a la base de datos está configurada en los archivos `database.py`, `pandas_consultas.py` y `seaborn_graficas.py`. Si necesitas modificar los parámetros de conexión, actualiza la variable `DATABASE_URL`.
+
+### Añadir Nuevas Consultas
+
+Para añadir nuevas consultas:
+
+1. Define las funciones de consulta en `pandas_consultas.py` o `seaborn_graficas.py`
+2. Agrega nuevos endpoints en `main.py` que utilicen estas funciones
+
+## 🤝 Contribuciones
+
+Las contribuciones son bienvenidas. Para contribuir:
+
+1. Haz un fork del repositorio
+2. Crea una rama para tu característica (`git checkout -b feature/amazing-feature`)
 3. Haz commit de tus cambios (`git commit -m 'Add some amazing feature'`)
 4. Push a la rama (`git push origin feature/amazing-feature`)
 5. Abre un Pull Request
 
-## Licencia
+## 📝 Licencia
 
-Este proyecto está licenciado bajo la Licencia MIT - ver el archivo LICENSE para más detalles.
+Este proyecto está licenciado bajo [incluir tu licencia preferida].
 
-## Contacto
+## 📧 Contacto
 
-[Tu Nombre] - [tu@email.com]
+[Tu Nombre/Equipo] - [tu@email.com]
 
-Link del proyecto: [https://github.com/tu-usuario/video-games-api](https://github.com/tu-usuario/video-games-api)
+---
+
+Desarrollado con ❤️ utilizando FastAPI, MySQL y herramientas de análisis de datos.

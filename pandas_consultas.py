@@ -51,8 +51,63 @@ def get_lanzamientos_por_anio():
     SELECT gpl.release_year AS 'Año de Lanzamiento',
            COUNT(*) AS 'Cantidad de Juegos'
     FROM game_platform gpl
+    WHERE gpl.release_year IS NOT NULL
     GROUP BY gpl.release_year
     ORDER BY gpl.release_year
+    """
+    
+    df = pd.read_sql(query, engine)
+    return df
+
+def get_top_generos_juegos(TOP):
+    """
+    Obtiene los TOP géneros con más juegos
+    """
+    query = f"""
+    SELECT COALESCE(g.genre_name, 'Desconocido') AS 'Género',
+           COUNT(DISTINCT ga.id) AS 'Cantidad de Juegos'
+    FROM game ga
+    LEFT JOIN genre g ON ga.genre_id = g.id
+    GROUP BY g.genre_name
+    ORDER BY COUNT(DISTINCT ga.id) DESC
+    LIMIT {TOP}
+    """
+    
+    df = pd.read_sql(query, engine)
+    return df
+
+def get_top_juegos_menos_ventas(TOP):
+    """
+    Obtiene los TOP juegos con menos ventas totales
+    """
+    query = f"""
+    SELECT ga.game_name AS 'Juego',
+           SUM(rs.num_sales) AS 'Ventas Totales'
+    FROM game ga
+    JOIN game_publisher gp ON ga.id = gp.game_id
+    JOIN game_platform gpl ON gp.id = gpl.game_publisher_id
+    JOIN region_sales rs ON gpl.id = rs.game_platform_id
+    GROUP BY ga.game_name
+    HAVING SUM(rs.num_sales) > 0
+    ORDER BY SUM(rs.num_sales) ASC
+    LIMIT {TOP}
+    """
+    
+    df = pd.read_sql(query, engine)
+    return df
+
+def get_top_publishers_juegos(TOP):
+    """
+    Obtiene los TOP publishers con más juegos publicados
+    """
+    query = f"""
+    SELECT p.publisher_name AS 'Publisher',
+           COUNT(DISTINCT gp.game_id) AS 'Cantidad de Juegos'
+    FROM publisher p
+    JOIN game_publisher gp ON p.id = gp.publisher_id
+    GROUP BY p.publisher_name
+    ORDER BY COUNT(DISTINCT gp.game_id) DESC
+    LIMIT {TOP}
     """
     
     df = pd.read_sql(query, engine)
